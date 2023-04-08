@@ -93,37 +93,45 @@ public class ApexUnitTestClassShouldHaveAssertsRule extends AbstractApexUnitTest
             statements.addAll(blockStatement.findDescendantsOfType(ASTStatement.class));
             methodCalls.addAll(blockStatement.findDescendantsOfType(ASTMethodCallExpression.class));
         }
-        boolean isAssertFound = false;
-
-        for (final ASTMethodCallExpression methodCallExpression : methodCalls) {
-            if (ASSERT_METHODS.contains(methodCallExpression.getFullMethodName().toLowerCase(Locale.ROOT))) {
-                isAssertFound = true;
-                break;
-            }
-        }
-
-        // If we didn't find assert method invocations the simple way and we have a
-        // configured pattern, try it
+        boolean isAssertFound = isAssertMethodCalled(methodCalls);
+    
         if (!isAssertFound) {
             final String additionalAssertMethodPattern = getProperty(ADDITIONAL_ASSERT_METHOD_PATTERN_DESCRIPTOR);
-            final Pattern compiledPattern = getCompiledAdditionalAssertMethodPattern(additionalAssertMethodPattern);
-            if (compiledPattern != null) {
-                for (final ASTMethodCallExpression methodCallExpression : methodCalls) {
-                    final String fullMethodName = methodCallExpression.getFullMethodName();
-                    if (compiledPattern.matcher(fullMethodName).matches()) {
-                        isAssertFound = true;
-                        break;
-                    }
-                }
-            }
+            isAssertFound = isAssertMethodPatternMatched(methodCalls, additionalAssertMethodPattern);
         }
-
+    
         if (!isAssertFound) {
             addViolation(data, node);
         }
-
+    
         return data;
     }
+    
+    private boolean isAssertMethodCalled(List<ASTMethodCallExpression> methodCalls) {
+        for (final ASTMethodCallExpression methodCallExpression : methodCalls) {
+            if (ASSERT_METHODS.contains(methodCallExpression.getFullMethodName().toLowerCase(Locale.ROOT))) {
+                return true;
+            }
+        }
+        return false;
+    }
+    
+    private boolean isAssertMethodPatternMatched(List<ASTMethodCallExpression> methodCalls, String pattern) {
+        if (pattern == null || pattern.trim().isEmpty()) {
+            return false;
+        }
+        final Pattern compiledPattern = getCompiledAdditionalAssertMethodPattern(pattern);
+        if (compiledPattern != null) {
+            for (final ASTMethodCallExpression methodCallExpression : methodCalls) {
+                final String fullMethodName = methodCallExpression.getFullMethodName();
+                if (compiledPattern.matcher(fullMethodName).matches()) {
+                    return true;
+                }
+            }
+        }
+        return false;
+    }
+    
 
     private Pattern getCompiledAdditionalAssertMethodPattern(String additionalAssertMethodPattern) {
         if (StringUtils.isNotBlank(additionalAssertMethodPattern)) {
