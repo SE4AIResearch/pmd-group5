@@ -206,9 +206,15 @@ public class PMDConfiguration extends AbstractConfiguration {
      * @param classLoader
      *            The ClassLoader to use
      */
+
+    private ClassLoader getClassLoaderFromClass(Class<?> clazz) {
+        return clazz.getClassLoader();
+    }
+
     public void setClassLoader(ClassLoader classLoader) {
         if (classLoader == null) {
-            this.classLoader = getClass().getClassLoader();
+            ClassLoader classLoader_1 = getClassLoaderFromClass(getClass());
+            this.classLoader = classLoader_1;
         } else {
             this.classLoader = classLoader;
         }
