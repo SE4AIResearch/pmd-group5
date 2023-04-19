@@ -96,8 +96,8 @@ public class ApexUnitTestClassShouldHaveAssertsRule extends AbstractApexUnitTest
         boolean isAssertFound = isAssertMethodCalled(methodCalls);
     
         if (!isAssertFound) {
-            final String additionalAssertMethodPattern = getProperty(ADDITIONAL_ASSERT_METHOD_PATTERN_DESCRIPTOR);
-            isAssertFound = isAssertMethodPatternMatched(methodCalls, additionalAssertMethodPattern);
+            // final String additionalAssertMethodPattern = getProperty(ADDITIONAL_ASSERT_METHOD_PATTERN_DESCRIPTOR);
+            isAssertFound = isAssertMethodPatternMatched(methodCalls);
         }
     
         if (!isAssertFound) {
@@ -116,19 +116,23 @@ public class ApexUnitTestClassShouldHaveAssertsRule extends AbstractApexUnitTest
         return false;
     }
     
-    private boolean isAssertMethodPatternMatched(List<ASTMethodCallExpression> methodCalls, String pattern) {
-        if (pattern == null || pattern.trim().isEmpty()) {
-            return false;
-        }
-        final Pattern compiledPattern = getCompiledAdditionalAssertMethodPattern(pattern);
-        if (compiledPattern != null) {
-            for (final ASTMethodCallExpression methodCallExpression : methodCalls) {
-                final String fullMethodName = methodCallExpression.getFullMethodName();
-                if (compiledPattern.matcher(fullMethodName).matches()) {
-                    return true;
+    private boolean isAssertMethodPatternMatched(List<ASTMethodCallExpression> methodCalls) {
+        final String additionalAssertMethodPattern = getProperty(ADDITIONAL_ASSERT_METHOD_PATTERN_DESCRIPTOR);
+    
+        if (StringUtils.isNotBlank(additionalAssertMethodPattern)) {
+            final Pattern compiledPattern = getCompiledAdditionalAssertMethodPattern(additionalAssertMethodPattern);
+    
+            if (compiledPattern != null) {
+                for (final ASTMethodCallExpression methodCallExpression : methodCalls) {
+                    final String fullMethodName = methodCallExpression.getFullMethodName();
+    
+                    if (compiledPattern.matcher(fullMethodName).matches()) {
+                        return true;
+                    }
                 }
             }
         }
+    
         return false;
     }
     

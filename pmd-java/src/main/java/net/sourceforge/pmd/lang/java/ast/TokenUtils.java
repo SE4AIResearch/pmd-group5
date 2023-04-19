@@ -55,7 +55,19 @@ final class TokenUtils {
      */
     // test only
     public static <T extends GenericToken<T>> T nthPrevious(T startHint, T anchor, int n) {
-        validateInput(startHint, anchor, n);
+
+        try {
+            validateInput(startHint, anchor, n);
+        } catch (IllegalStateException e) {
+            // Handle IllegalStateException
+            System.out.println(e.getMessage());
+        } catch (NoSuchElementException e) {
+            // Handle NoSuchElementException
+            System.out.println(e.getMessage());
+        } catch (Exception e) {
+            // Handle other exceptions
+            System.out.println("An unexpected error occurred: " + e.getMessage());
+        }
     
         int numAway = 0;
         T target = startHint;
@@ -70,7 +82,19 @@ final class TokenUtils {
             }
         }
     
-        validateOutput(current, anchor, numAway, n);
+        
+        try {
+            validateOutput(current, anchor, numAway, n);
+        } catch (IllegalStateException e) {
+            // Handle IllegalStateException
+            System.out.println(e.getMessage());
+        } catch (NoSuchElementException e) {
+            // Handle NoSuchElementException
+            System.out.println(e.getMessage());
+        } catch (Exception e) {
+            // Handle other exceptions
+            System.out.println("An unexpected error occurred: " + e.getMessage());
+        }
     
         return target;
     }

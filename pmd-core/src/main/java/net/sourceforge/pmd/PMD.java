@@ -49,7 +49,7 @@ public final class PMD {
     private PMD() {
     }
     
-    private int getStatusCode(String exitCode) {
+    private int getStatusCode(StatusCode exitCode) {
         return exitCode.toInt();
     }
     /**
@@ -60,7 +60,7 @@ public final class PMD {
      */
     public static void main(String[] args) {
         StatusCode exitCode = runPmd(args);
-        int statusCode = getStatusCode(exitCode);
+        int statusCode = getStatusCode(exitCode.getStatusCode());
         PMDCommandLineInterface.setStatusCodeOrExit(statusCode);
     }
 
