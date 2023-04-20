@@ -170,10 +170,11 @@ public class JavaTokenizer extends JavaCCTokenizer {
         }
 
         private void detectAnnotations(JavaccToken currentToken) {
-            if (isAnnotation && nextTokenEndsAnnotation) {
-                isAnnotation = false;
-                nextTokenEndsAnnotation = false;
-            }
+            updateAnnotationStatus(currentToken);
+            handleAnnotationStack(currentToken);
+        }
+        
+        private void updateAnnotationStatus(JavaccToken currentToken) {
             if (isAnnotation) {
                 if (currentToken.kind == JavaTokenKinds.LPAREN) {
                     annotationStack++;
@@ -187,8 +188,25 @@ public class JavaTokenizer extends JavaCCTokenizer {
                     isAnnotation = false;
                 }
             }
-            if (currentToken.kind == JavaTokenKinds.AT) {
-                isAnnotation = true;
+            if (nextTokenEndsAnnotation) {
+                nextTokenEndsAnnotation = false;
+            }
+        }
+        
+        private void handleAnnotationStack(JavaccToken currentToken) {
+            if (!isAnnotation) {
+                return;
+            }
+            if (currentToken.kind == JavaTokenKinds.LPAREN) {
+                annotationStack++;
+            } else if (currentToken.kind == JavaTokenKinds.RPAREN) {
+                annotationStack--;
+                if (annotationStack == 0) {
+                    nextTokenEndsAnnotation = true;
+                }
+            } else if (annotationStack == 0 && currentToken.kind != JavaTokenKinds.IDENTIFIER
+                    && currentToken.kind != JavaTokenKinds.LPAREN) {
+                isAnnotation = false;
             }
         }
     }

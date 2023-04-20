@@ -48,7 +48,10 @@ public final class PMD {
 
     private PMD() {
     }
-
+    
+    private int getStatusCode(StatusCode exitCode) {
+        return exitCode.toInt();
+    }
     /**
      * Entry to invoke PMD as command line tool. Note that this will
      * invoke {@link System#exit(int)}.
@@ -57,7 +60,8 @@ public final class PMD {
      */
     public static void main(String[] args) {
         StatusCode exitCode = runPmd(args);
-        PMDCommandLineInterface.setStatusCodeOrExit(exitCode.toInt());
+        int statusCode = getStatusCode(exitCode.getStatusCode());
+        PMDCommandLineInterface.setStatusCodeOrExit(statusCode);
     }
 
     /**

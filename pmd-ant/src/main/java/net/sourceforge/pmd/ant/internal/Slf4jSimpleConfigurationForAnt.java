@@ -111,40 +111,36 @@ public final class Slf4jSimpleConfigurationForAnt {
     private static Level getAntLogLevel(Project project) {
         for (final BuildListener l : project.getBuildListeners()) {
             Field declaredField = null;
-            try {
-                if (l instanceof DefaultLogger) {
-                    declaredField = DefaultLogger.class.getDeclaredField("msgOutputLevel");
-                } else if (l instanceof XmlLogger) {
-                    declaredField = XmlLogger.class.getDeclaredField("msgOutputLevel");
-                } else if (l instanceof RecorderEntry) {
-                    declaredField = RecorderEntry.class.getDeclaredField("loglevel");
-                } else if ("org.gradle.api.internal.project.ant.AntLoggingAdapter".equals(l.getClass().getName())) {
-                    return determineGradleLogLevel(project, l);
-                } else {
-                    try {
-                        declaredField = l.getClass().getDeclaredField("logLevel");
-                        if (declaredField.getType() != Integer.class && declaredField.getType() != int.class) {
-                            declaredField = null;
-                            project.log("Unsupported build listener: " + l.getClass(), Project.MSG_DEBUG);
-                        }
-                    } catch (final NoSuchFieldException e) {
-                        project.log("Unsupported build listener: " + l.getClass(), Project.MSG_DEBUG);
+            Class<?> clazz = l.getClass();
+            if ("org.gradle.api.internal.project.ant.AntLoggingAdapter".equals(clazz.getName())) {
+                return determineGradleLogLevel(project, l);
+            }
+            while (clazz != null) {
+                try {
+                    declaredField = clazz.getDeclaredField("logLevel");
+                    if (declaredField.getType() == Integer.class || declaredField.getType() == int.class) {
+                        break;
                     }
+                    declaredField = null;
+                } catch (final NoSuchFieldException ignored) {
                 }
-
-                if (declaredField != null) {
-                    declaredField.setAccessible(true);
-                    return LOG_LEVELS[declaredField.getInt(l)];
-                }
-
-            } catch (final ReflectiveOperationException ignored) {
-                // Just ignore it
+                clazz = clazz.getSuperclass();
+            }
+            if (declaredField != null) {
+                declaredField.setAccessible(true);
+                return LOG_LEVELS[declaredField.getInt(l)];
+            } else if (l instanceof DefaultLogger) {
+                return LOG_LEVELS[((DefaultLogger) l).getLevel()];
+            } else if (l instanceof XmlLogger) {
+                return LOG_LEVELS[((XmlLogger) l).getMsgOutputLevel()];
+            } else if (l instanceof RecorderEntry) {
+                return LOG_LEVELS[((RecorderEntry) l).getLoglevel()];
+            } else {
+                project.log("Unsupported build listener: " + l.getClass(), Project.MSG_DEBUG);
             }
         }
-
         project.log("Could not determine ant log level, no supported build listeners found. "
                 + "Log level is set to " + DEFAULT_LEVEL, Project.MSG_WARN);
-
         return DEFAULT_LEVEL;
     }
 

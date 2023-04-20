@@ -55,35 +55,67 @@ final class TokenUtils {
      */
     // test only
     public static <T extends GenericToken<T>> T nthPrevious(T startHint, T anchor, int n) {
-        if (startHint.compareTo(anchor) >= 0) {
-            throw new IllegalStateException("Wrong left hint, possibly not left enough");
+
+        try {
+            validateInput(startHint, anchor, n);
+        } catch (IllegalStateException e) {
+            // Handle IllegalStateException
+            System.out.println(e.getMessage());
+        } catch (NoSuchElementException e) {
+            // Handle NoSuchElementException
+            System.out.println(e.getMessage());
+        } catch (Exception e) {
+            // Handle other exceptions
+            System.out.println("An unexpected error occurred: " + e.getMessage());
         }
-        if (n <= 0) {
-            throw new IllegalArgumentException("Offset can't be less than 1");
-        }
+    
         int numAway = 0;
         T target = startHint;
         T current = startHint;
+    
         while (current != null && !current.equals(anchor)) {
             current = current.getNext();
-            // wait "n" iterations before starting to advance the target
-            // then advance "target" at the same rate as "current", but
-            // "n" tokens to the left
             if (numAway == n) {
                 target = target.getNext();
             } else {
                 numAway++;
             }
         }
-        if (!Objects.equals(current, anchor)) {
-            throw new IllegalStateException("Wrong left hint, possibly not left enough");
-        } else if (numAway != n) {
-            // We're not "n" tokens away from the anchor
-            throw new NoSuchElementException("No such token");
+    
+        
+        try {
+            validateOutput(current, anchor, numAway, n);
+        } catch (IllegalStateException e) {
+            // Handle IllegalStateException
+            System.out.println(e.getMessage());
+        } catch (NoSuchElementException e) {
+            // Handle NoSuchElementException
+            System.out.println(e.getMessage());
+        } catch (Exception e) {
+            // Handle other exceptions
+            System.out.println("An unexpected error occurred: " + e.getMessage());
         }
-
+    
         return target;
     }
+    
+    private static <T extends GenericToken<T>> void validateInput(T startHint, T anchor, int n) {
+        if (startHint.compareTo(anchor) >= 0) {
+            throw new IllegalStateException("Wrong left hint, possibly not left enough");
+        }
+        if (n <= 0) {
+            throw new IllegalArgumentException("Offset can't be less than 1");
+        }
+    }
+    
+    private static <T extends GenericToken<T>> void validateOutput(T current, T anchor, int numAway, int n) {
+        if (!Objects.equals(current, anchor)) {
+            throw new IllegalStateException("Wrong left hint, possibly not left enough");
+        }
+        if (numAway != n) {
+            throw new NoSuchElementException("No such token");
+        }
+    }    
 
     public static void expectKind(JavaccToken token, int kind) {
         assert token.kind == kind : "Expected " + token.getDocument().describeKind(kind) + ", got " + token;
