@@ -389,7 +389,7 @@ public final class PmdAnalysis implements AutoCloseable {
             } catch (Exception e) {
                 reporter.errorEx("Exception while closing analysis listeners", e);
                 // todo better exception
-                throw new RuntimeException("Exception while closing analysis listeners", e);
+                // No need to throw a new RuntimeException here
             }
         }
     }
@@ -546,9 +546,9 @@ public final class PmdAnalysis implements AutoCloseable {
             && configuration.getAnalysisCache() instanceof NoopAnalysisCache
             && reporter.isLoggable(Level.WARN)) {
             final String version =
-                PMDVersion.isUnknown() || PMDVersion.isSnapshot() ? "latest" : "pmd-" + PMDVersion.VERSION;
+                PMDVersion.isUnknown() || PMDVersion.isSnapshot() ? "latest" : "pmd-doc-" + PMDVersion.VERSION;
             reporter.warn("This analysis could be faster, please consider using Incremental Analysis: "
-                            + "https://pmd.github.io/{0}/pmd_userdocs_incremental_analysis.html", version);
+                            + "https://docs.pmd-code.org/{0}/pmd_userdocs_incremental_analysis.html", version);
         }
     }
 }
