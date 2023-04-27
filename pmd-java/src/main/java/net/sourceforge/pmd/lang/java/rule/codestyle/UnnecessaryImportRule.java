@@ -79,7 +79,6 @@ public class UnnecessaryImportRule extends AbstractJavaRule {
     /* package.class#member(param, param) */
     private static final String TYPE_PART_GROUP = "((?:\\p{Alpha}\\w*\\.)*(?:\\p{Alpha}\\w*))?(?:#\\w*(?:\\(([.\\w\\s,\\[\\]]*)\\))?)?";
 
-
     private static final Pattern SEE_PATTERN = Pattern.compile("@see\\s+" + TYPE_PART_GROUP);
 
 
