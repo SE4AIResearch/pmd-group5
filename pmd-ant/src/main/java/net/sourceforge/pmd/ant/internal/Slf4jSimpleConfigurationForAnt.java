@@ -44,12 +44,17 @@ public final class Slf4jSimpleConfigurationForAnt {
         PrintStream original = System.err;
         try {
             System.setErr(new SimpleLoggerToAntBridge(antProject, original));
-
+            private static final String FALSE = "false";
             // configuring the format so that the log level appears at the beginning of the printed line
-            System.setProperty("org.slf4j.simpleLogger.showDateTime", "false");
-            System.setProperty("org.slf4j.simpleLogger.showThreadName", "false");
-            System.setProperty("org.slf4j.simpleLogger.showThreadId", "false");
-            System.setProperty("org.slf4j.simpleLogger.levelInBrackets", "false");
+            System.setProperty("org.slf4j.simpleLogger.showDateTime", FALSE);
+            System.setProperty("org.slf4j.simpleLogger.showThreadName", FALSE);
+            System.setProperty("org.slf4j.simpleLogger.showThreadId", FALSE);
+            System.setProperty("org.slf4j.simpleLogger.levelInBrackets", FALSE);   
+            
+//             System.setProperty("org.slf4j.simpleLogger.showDateTime", "false");
+//             System.setProperty("org.slf4j.simpleLogger.showThreadName", "false");
+//             System.setProperty("org.slf4j.simpleLogger.showThreadId", "false");
+//             System.setProperty("org.slf4j.simpleLogger.levelInBrackets", "false");
 
             // using cacheOutputStream so that we can restore System.err after SimpleLogger has been initialized
             System.setProperty("org.slf4j.simpleLogger.cacheOutputStream", "true");
