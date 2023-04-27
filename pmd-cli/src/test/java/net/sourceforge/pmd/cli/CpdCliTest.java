@@ -40,8 +40,8 @@ class CpdCliTest extends BaseCliTest {
             new File(SRC_DIR, "file_with_ISO-8859-1_encoding.java").getAbsolutePath(), 8,
             new File(SRC_DIR, "file_with_utf8_bom.java").getAbsolutePath(), 9
     );
-    @TempDir
-    private Path tempDir;
+//     @TempDir
+//     private Path tempDir;
 
     @Override
     protected List<String> cliStandardArgs() {
