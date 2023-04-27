@@ -463,6 +463,7 @@ final class ApexTreeBuilder extends AstVisitor<AdditionalPassScope> {
      * <p>
      * Note that the provided token list must implement {@link RandomAccess}.
      */
+    @Override
     private static final class TokenListByStartIndex extends AbstractList<Integer> implements RandomAccess {
 
         private final List<TokenLocation> tokens;
