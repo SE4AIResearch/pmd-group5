@@ -743,7 +743,7 @@ public class GUI implements CPDListener {
                 long now = System.currentTimeMillis();
                 long elapsedMillis = now - start;
                 long elapsedSeconds = elapsedMillis / 1000;
-                long minutes = (long) Math.floor(elapsedSeconds / 60);
+                long minutes = (long) Math.floor((double)elapsedSeconds / 60);
                 long seconds = elapsedSeconds - minutes * 60;
                 timeField.setText(formatTime(minutes, seconds));
             }
